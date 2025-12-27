@@ -6,7 +6,7 @@ import (
 	"github.com/gin-contrib/sessions"
 
 	"github.com/boj/redistore"
-	"github.com/gomodule/redigo/redis"
+	"github.com/redis/go-redis/v9"
 )
 
 type Store interface {
@@ -55,20 +55,20 @@ func NewStoreWithDB(size int, network, address, username, password, db string, k
 	return &store{s}, nil
 }
 
-// NewStoreWithPool creates a new session store using a Redis connection pool.
+// NewStoreWithClient creates a new session store using a Redis connection pool.
 // It takes a redis.Pool and an optional variadic list of key pairs for
 // authentication and encryption of session data.
 //
 // Parameters:
-//   - pool: A redis.Pool object that manages a pool of Redis connections.
+//   - client: A redis.UniversalClient object that manages a pool of Redis connections.
 //   - keyPairs: Optional variadic list of byte slices used for authentication
 //     and encryption of session data.
 //
 // Returns:
 //   - Store: A new session store backed by Redis.
 //   - error: An error if the store could not be created.
-func NewStoreWithPool(pool *redis.Pool, keyPairs ...[]byte) (Store, error) {
-	s, err := redistore.NewRediStoreWithPool(pool, keyPairs...)
+func NewStoreWithClient(client redis.UniversalClient, keyPairs ...[]byte) (Store, error) {
+	s, err := redistore.NewRediStoreWithClient(client, keyPairs...)
 	if err != nil {
 		return nil, err
 	}
